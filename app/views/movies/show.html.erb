@@ -1,0 +1,11 @@
+<%= javascript_pack_tag 'hello_vue' %>
+  <div id='hello'>
+    <my-video :sources="[{
+           src: '<%= '/static/' + @movie.id.to_s %>',
+           type: 'video/mp4'
+                      }]"
+                      :options="{
+           autoplay: true,
+           title: '<%= @movie.title %>',
+                      }" ></my-video>
+  </div>

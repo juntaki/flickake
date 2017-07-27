@@ -1,0 +1,11 @@
+// Place all the styles related to the movies controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+.movie-card {
+  width: 512px;
+  margin: 10px;
+  float:left;
+}
+.movie-title {
+  height: 2.5em;
+}

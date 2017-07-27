@@ -1,0 +1,17 @@
+<% @list.each do |m| %>
+<% url =  '/movies/' + m[:id].to_s %>
+<% thumburl =  url + '/thumb' %>
+<%= link_to(url,  data: {"turbolinks" => false}) do %>
+  <div class="movie-card mdl-card mdl-shadow--3dp">
+    <div class="mdl-card__media">
+      <%= image_tag(thumburl) %>
+    </div>
+    <div class="mdl-card__title">
+      <div class="movie-title">
+        <%= m.title %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<% end %>
+
