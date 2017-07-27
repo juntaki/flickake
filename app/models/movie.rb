@@ -4,7 +4,7 @@ class Movie < ApplicationRecord
     # TODO: Skip deletion for faster scan
     Dir.glob(Rails.root.join("files/*")).each do |m|
       next if m.include?("thumb")
-      puts m
+      next if File.directory?(m)
       system("ffmpegthumbnailer -s 512 -i #{m} -o #{m}.thumb.jpg")
       Movie.create(
         title: File.basename(m),

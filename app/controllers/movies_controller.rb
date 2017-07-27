@@ -3,7 +3,7 @@ class MoviesController < ApplicationController
   def static
     movie = Movie.find(params[:id])
     # TODO: should be served from web server
-    p file_name = movie.title
+    file_name = movie.title
     file_path = Rails.root.join("files", file_name)
     if(request.headers["range"])
       file_size = File.size(file_path)

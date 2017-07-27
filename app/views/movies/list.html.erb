@@ -1,8 +1,9 @@
-<% @list.each do |m| %>
-<% url =  '/movies/' + m[:id].to_s %>
 <%= button_to '/movies' , method: :put, class: "update mdl-button mdl-js-button mdl-button--fab mdl-button--colored" do %>
   <i class="material-icons">loop</i>
 <% end %>
+
+<% @list.each do |m| %>
+<% url =  '/movies/' + m[:id].to_s %>
 
 <% thumburl =  url + '/thumb' %>
 <%= link_to(url,  data: {"turbolinks" => false}) do %>
