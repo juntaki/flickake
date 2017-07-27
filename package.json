@@ -1,5 +1,5 @@
 {
-  "name": "dirstream",
+  "name": "flickake",
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",

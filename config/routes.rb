@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   get '/static/:id', to: 'movies#static'
   get '/movies/:id', to: 'movies#show'
   get '/movies/:id/thumb', to: 'movies#thumb'
+  put '/movies', to: 'movies#scan'
 end

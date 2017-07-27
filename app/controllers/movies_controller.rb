@@ -52,4 +52,8 @@ class MoviesController < ApplicationController
   def thumb
     send_file Movie.find(params[:id]).thumbnail, :disposition => 'inline'
   end
+
+  def scan
+    Movie.scan
+  end
 end
