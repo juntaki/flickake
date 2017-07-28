@@ -43,7 +43,7 @@ class MoviesController < ApplicationController
   end
 
   def list
-    @list = Movie.all
+    @list = Movie.order('date DESC')
     if params[:format] == 'json'
       render :json => @list
     end
