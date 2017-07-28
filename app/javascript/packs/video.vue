@@ -96,14 +96,14 @@ body {
 }
 </style>
 <template>
-  <div id="app" ref="app" class="__ds-video" v-on:mouseenter="mouseEnter" v-on:mouseleave="mouseLeave">
-    <video class="__ds-video" ref="video" v-on:dblclick="fullscreen" v-on:click="play" v-on:keyup.space="play">
+  <div id="app" ref="app" class="__ds-video" v-on:mousemove="mouseMove">
+    <video class="__ds-video" ref="video" v-on:dblclick="fullscreen">
       <source v-for="source in sources" :src="source.src">
       </source>
     </video>
-    <div class="control" v-if="state.show">
-      <div class="progress-bar">
-        <div class="progress" ref="progress" v-on:mousedown="updatebar">
+    <div class="control" v-show="state.show">
+      <div class="progress-bar" v-on:mousedown="updatebar">
+        <div class="progress" ref="progress">
           <span class="timeBar" v-bind:style="state.timeBar"></span>
         </div>
       </div>
@@ -174,6 +174,8 @@ export default {
       },
       tmp: {
         contrlHideTimer: null,
+        clientX: 0,
+        clientY: 0
       }
     }
   },
@@ -201,20 +203,16 @@ export default {
         this.$video.pause()
       }
     },
-    mouseEnter() {
-      if (this.tmp.contrlHideTimer) {
-        clearTimeout(this.tmp.contrlHideTimer)
-        this.tmp.contrlHideTimer = null
+    mouseMove(e) {
+      if (e.clientX == this.tmp.clientX && e.clientY == this.tmp.clientY) {
+        return
       }
+      this.tmp.clientX = e.clientX
+      this.tmp.clientY = e.clientY
       this.state.show = true
-    },
-    mouseLeave() {
-      if (this.tmp.contrlHideTimer) {
-        clearTimeout(this.tmp.contrlHideTimer)
-      }
+      clearTimeout(this.tmp.contrlHideTimer)
       this.tmp.contrlHideTimer = setTimeout(() => {
         this.state.show = false
-        this.tmp.contrlHideTimer = null
       }, 2000)
     },
     changewidth() {
