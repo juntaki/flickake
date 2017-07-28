@@ -53,7 +53,7 @@ $ctlRadius:1em;
 }
 
 .control .title {
-   font-size: 2em;
+  font-size: 2em;
 }
 
 .control .sound {
@@ -96,15 +96,12 @@ body {
 }
 </style>
 <template>
-  <div id="app" ref="app" class="__ds-video">
-    <video class="__ds-video" ref="video"
-     v-on:dblclick="fullscreen"
-     v-on:keyup.space="play"
-     >
+  <div id="app" ref="app" class="__ds-video" v-on:mouseenter="mouseEnter" v-on:mouseleave="mouseLeave">
+    <video class="__ds-video" ref="video" v-on:dblclick="fullscreen" v-on:click="play" v-on:keyup.space="play">
       <source v-for="source in sources" :src="source.src">
       </source>
     </video>
-    <div class="control">
+    <div class="control" v-if="state.show">
       <div class="progress-bar">
         <div class="progress" ref="progress" v-on:mousedown="updatebar">
           <span class="timeBar" v-bind:style="state.timeBar"></span>
@@ -121,11 +118,9 @@ body {
         <div class="btnLeft btn" v-on:click="skip(10)">
           <icon class="icon" name="step-forward"></icon>
         </div>
-        <div class="btnFS btn" title="Exit full screen" v-on:click="exitFullscreen" v-if="state.fullscreen">
-          <icon class="icon" name="compress"></icon>
-        </div>
-        <div class="btnFS btn" title="Switch to full screen" v-on:click="fullscreen" v-else>
-          <icon class="icon" name="arrows-alt"></icon>
+        <div class="btnFS btn" title="Exit full screen" v-on:click="fullscreen">
+          <icon class="icon" name="compress" v-if="state.fullscreen"></icon>
+          <icon class="icon" name="arrows-alt" v-else></icon>
         </div>
         <div class="sound btn" title="Mute/Unmute sound">
           <icon class="icon" name="volume-up"></icon>
@@ -176,6 +171,9 @@ export default {
         fullscreen: false,
         show: true,
         playing: false
+      },
+      tmp: {
+        contrlHideTimer: null,
       }
     }
   },
@@ -191,8 +189,8 @@ export default {
     })
     if (this.options.autoplay) {
       this.play()
+      this.state.show = false
     }
-
   },
   methods: {
     play() {
@@ -203,31 +201,48 @@ export default {
         this.$video.pause()
       }
     },
+    mouseEnter() {
+      if (this.tmp.contrlHideTimer) {
+        clearTimeout(this.tmp.contrlHideTimer)
+        this.tmp.contrlHideTimer = null
+      }
+      this.state.show = true
+    },
+    mouseLeave() {
+      if (this.tmp.contrlHideTimer) {
+        clearTimeout(this.tmp.contrlHideTimer)
+      }
+      this.tmp.contrlHideTimer = setTimeout(() => {
+        this.state.show = false
+        this.tmp.contrlHideTimer = null
+      }, 2000)
+    },
     changewidth() {
       const percentage = this.$video.currentTime / this.$video.duration
       const position = 90 * percentage
       this.state.timeBar.width = position + "vw"
     },
     fullscreen() {
-      this.state.fullscreen = true
-      const container = this.$refs.app
-      if (container.requestFullscreen) {
-        container.requestFullscreen()
-      } else if (container.webkitRequestFullscreen) {
-        container.webkitRequestFullscreen()
-      } else if (container.mozRequestFullScreen) {
-        container.mozRequestFullScreen()
-      }
-    },
-    exitFullscreen() {
-      this.state.fullscreen = false
-      const container = document
-      if (container.exitFullscreen) {
-        container.exitFullscreen()
-      } else if (container.webkitCancelFullScreen) {
-        container.webkitCancelFullScreen()
-      } else if (container.mozCancelFullScreen) {
-        container.mozCancelFullScreen()
+      if (this.state.fullscreen) {
+        this.state.fullscreen = false
+        const container = document
+        if (container.exitFullscreen) {
+          container.exitFullscreen()
+        } else if (container.webkitCancelFullScreen) {
+          container.webkitCancelFullScreen()
+        } else if (container.mozCancelFullScreen) {
+          container.mozCancelFullScreen()
+        }
+      } else {
+        this.state.fullscreen = true
+        const container = this.$refs.app
+        if (container.requestFullscreen) {
+          container.requestFullscreen()
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen()
+        } else if (container.mozRequestFullScreen) {
+          container.mozRequestFullScreen()
+        }
       }
     },
     updatebar(e) {
