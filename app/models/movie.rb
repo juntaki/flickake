@@ -9,7 +9,7 @@ class Movie < ApplicationRecord
         movie.update(delflag: false)
         next
       end
-      system("ffmpegthumbnailer -s 512 -i #{m} -o #{m}.thumb.jpg")
+      system("ffmpegthumbnailer -s 400 -i #{m} -o #{m}.thumb.jpg")
       Movie.create(
         title: File.basename(m),
         date: File.mtime(m),

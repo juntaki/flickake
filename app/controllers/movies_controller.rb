@@ -55,5 +55,6 @@ class MoviesController < ApplicationController
 
   def scan
     Movie.scan
+    redirect_back(fallback_location: '/')
   end
 end

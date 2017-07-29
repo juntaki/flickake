@@ -1,14 +1,48 @@
 // Place all the styles related to the movies controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+.movie-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: block;
+}
+
+.movie-cell {
+  min-width: 400px;
+  padding: 0.5em;
+}
+
+.mdl-grid.center-items {
+  justify-content: center;
+}
+
 .movie-card {
-  width: 512px;
-  margin: 10px;
-  float:left;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  background-size: cover;
+  background-position: center;
 }
-.movie-title {
-  height: 2.5em;
+
+.mdl-card__actions {
+  height: 3em;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  font-weight: 500;
 }
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
 .update {
-  float: right;
+  top: 1em;
+  right: 1em;
+  position: fixed;
+  z-index: 100;
+}
+
+body {
+  background-color: #263238;
 }
