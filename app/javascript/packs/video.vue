@@ -196,12 +196,12 @@ export default {
   },
   methods: {
     play() {
-      this.state.playing = !this.state.playing
       if (this.state.playing) {
-        this.$video.play()
-      } else {
         this.$video.pause()
+      } else {
+        this.$video.play()
       }
+      this.state.playing = !this.$video.paused
     },
     mouseMove(e) {
       if (e.clientX == this.tmp.clientX && e.clientY == this.tmp.clientY) {
@@ -211,9 +211,11 @@ export default {
       this.tmp.clientY = e.clientY
       this.state.show = true
       clearTimeout(this.tmp.contrlHideTimer)
-      this.tmp.contrlHideTimer = setTimeout(() => {
-        this.state.show = false
-      }, 2000)
+      if (this.state.playing) {
+        this.tmp.contrlHideTimer = setTimeout(() => {
+          this.state.show = false
+        }, 2000)
+      }
     },
     changewidth() {
       const percentage = this.$video.currentTime / this.$video.duration
