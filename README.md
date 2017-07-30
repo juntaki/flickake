@@ -1,24 +1,28 @@
-# README
+# Flickake
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Self-hosted movie library like Netflix, can be used with simple configuraion and little setting.
 
-Things you may want to cover:
+## How to use
 
-* Ruby version
+### Deploy with Docker
 
-* System dependencies
+Just specify path to your movie library directory.
+Your flickake will deployed to http://hostname:3000/
 
-* Configuration
+~~~
+docker pull juntaki/flickake
+docker run -d --name=flickake -p 3000:3000 \
+           -e SECRET_KEY_BASE=YOUR_SECRET \
+           -v /path/to/movie_library:/app/files juntaki/flickake \
+           -v /path/to/log:/app/log
+~~~
 
-* Database creation
+### Scan / Rescan movies in the library
 
-* Database initialization
+Click "Scan" in navigation bar.
 
-* How to run the test suite
+or run the following command-line.
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+~~~
+docker exec flickake rails movies:scan  
+~~~
