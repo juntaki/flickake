@@ -1,13 +1,63 @@
 <style lang="scss">
-$ctlHeight:7em;
-$barHeight:1.6em;
-$ctlRadius:1em;
+$ctlHeight:5em;
+$ctlHeightTablet:3.5em;
+$ctlHeightPhone:2em;
+$barHeight:1.3em;
+
+$breakpoint-tablet: 980px;
+$breakpoint-phone: 640px;
+
+@mixin max-screen($break-point) {
+  @media screen and (max-width: $break-point) {
+    @content;
+  }
+}
+
+%ctlHeight {
+  height: $ctlHeight;
+  @include max-screen($breakpoint-tablet) {
+    height: $ctlHeightTablet;
+  }
+  @include max-screen($breakpoint-phone) {
+    height: $ctlHeightPhone;
+  }
+}
+
+%ctlWidth {
+  @extend %barcommon;
+  width: $ctlHeight;
+  @include max-screen($breakpoint-tablet) {
+    width: $ctlHeightTablet;
+  }
+  @include max-screen($breakpoint-phone) {
+    width: $ctlHeightPhone;
+  }
+}
 
 .__ds-video {
   position: absolute;
   width: 100%;
   height: 100%;
   background-color: #000;
+}
+
+.back {
+  @extend %ctlHeight;
+  @extend %ctlWidth;
+  color: #ccc;
+  position: absolute;
+  border: 5px solid #ccc;
+  border-radius: 2em;
+  background: #222;
+
+  top: 5vh;
+  left: 5vw;
+}
+
+.icon {
+  width: 50%;
+  height: 50%;
+  margin: 25%;
 }
 
 .control {
@@ -17,73 +67,70 @@ $ctlRadius:1em;
   left: 5vw;
   width: 90vw;
   z-index: 5;
-}
 
-.control .btn {
-  width: $ctlHeight;
-  height: $ctlHeight;
+  %barcommon {
+    @extend %ctlHeight;
+    background: #222;
+    border: 1px solid #000;
+  }
+  %btn {
+    @extend %ctlWidth;
+    cursor: pointer;
+  }
+  .btnLeft {
+    @extend %btn;
+    float: left;
+  }
+  .btnLeftR {
+    @extend .btnLeft;
+    border-radius: 6px 0 0 6px;
+  }
+  .btnRight {
+    @extend %btn;
+    float: right;
+  }
+  .btnRightR {
+    @extend .btnRight;
+    border-radius: 0 6px 6px 0;
+  }
+  .barInfo {
+    @extend %barcommon;
+    position: relative;
+    width: auto;
+    overflow: hidden;
+  }
+  .title {
+    @include max-screen($breakpoint-phone) {
+      font-size: 10px;
+    }
+    display: flex;
+    align-items: center;
+    position: absolute;
+    height: 1em;
+    top:0;
+    bottom:0;
+    left: 1em;
+    margin: auto;
+  }
+  .progress {
+    height: $barHeight;
+    margin-bottom: $barHeight;
+    cursor: pointer;
+    background: #222;
+    border-radius: $barHeight;
 
-  background: #222;
-  border: 1px solid #000;
-  cursor: pointer;
-}
-
-.control .icon {
-  width: $ctlHeight/2;
-  height: $ctlHeight/2;
-  margin: $ctlHeight/4;
-}
-
-.control .btnLeftRadius {
-  border-radius: 6px 0 0 6px;
-  float: left;
-}
-
-.control .btnLeft {
-  float: left;
-}
-
-.control .barInfo {
-  height: 2em;
-  padding: ($ctlHeight - 2em)/2;
-  background: #222;
-  border: 1px solid #000;
-  width: auto;
-  overflow: hidden;
-}
-
-.control .title {
-  font-size: 2em;
-}
-
-.control .sound {
-  float: right;
-}
-
-.control .btnFS {
-  float: right;
-  border-radius: 0 6px 6px 0;
-}
-
-.progress {
-  height: $barHeight;
-  margin-bottom: $barHeight;
-  cursor: pointer;
-  background: #222;
-  border-radius: $barHeight;
-}
-
-.progress span {
-  height: $barHeight;
-  display: block;
-  border-radius: $barHeight;
-}
-
-.timeBar {
-  z-index: 10;
-  width: 0;
-  background: -webkit-linear-gradient(top, rgba(107, 204, 226, 1) 0%, rgba(29, 163, 208, 1) 100%);
-  box-shadow: 0 0 7px rgba(107, 204, 226, .5);
+    span {
+      height: $barHeight;
+      display: block;
+      border-radius: $barHeight;
+    }
+  }
+  .timeBar {
+    z-index: 10;
+    width: 0;
+    background: -webkit-linear-gradient(top, rgba(107, 204, 226, 1) 0%, rgba(29, 163, 208, 1) 100%);
+    box-shadow: 0 0 7px rgba(107, 204, 226, .5);
+  }
 }
 
 html,
@@ -92,7 +139,6 @@ body {
   padding: 0;
   background-color: #000;
   height: 100%;
-  font-size: 10px;
 }
 </style>
 <template>
@@ -101,28 +147,31 @@ body {
       <source v-for="source in sources" :src="source.src">
       </source>
     </video>
+    <div class="back" v-show="state.show" v-on:click="back">
+      <icon class="icon" name="arrow-left"></icon>
+    </div>
     <div class="control" v-show="state.show">
       <div class="progress-bar" v-on:mousedown="updatebar">
         <div class="progress" ref="progress">
           <span class="timeBar" v-bind:style="state.timeBar"></span>
         </div>
       </div>
-      <div class="btmControl">
-        <div class="btnLeftRadius btn" v-on:click="skip(-10)">
+      <div>
+        <div class="btnLeftR" v-on:click="skip(-10)">
           <icon class="icon" name="step-backward"></icon>
         </div>
-        <div class="btnLeft btn" title="Play/Pause video" v-on:click="play">
+        <div class="btnLeft" v-on:click="play">
           <icon v-if="state.playing" class="icon" name="pause"></icon>
           <icon v-else class="icon" name="play"></icon>
         </div>
-        <div class="btnLeft btn" v-on:click="skip(10)">
+        <div class="btnLeft" v-on:click="skip(10)">
           <icon class="icon" name="step-forward"></icon>
         </div>
-        <div class="btnFS btn" title="Exit full screen" v-on:click="fullscreen">
+        <div class="btnRightR" v-on:click="fullscreen">
           <icon class="icon" name="compress" v-if="state.fullscreen"></icon>
           <icon class="icon" name="arrows-alt" v-else></icon>
         </div>
-        <div class="sound btn" title="Mute/Unmute sound">
+        <div class="btnRight">
           <icon class="icon" name="volume-up"></icon>
         </div>
         <div class="barInfo">
@@ -193,8 +242,13 @@ export default {
       this.play()
       this.state.show = false
     }
+    this.showController()
   },
   methods: {
+    back() {
+      window.history.back();
+      return false;
+    },
     play() {
       if (this.state.playing) {
         this.$video.pause()
@@ -209,6 +263,9 @@ export default {
       }
       this.tmp.clientX = e.clientX
       this.tmp.clientY = e.clientY
+      this.showController()
+    },
+    showController() {
       this.state.show = true
       clearTimeout(this.tmp.contrlHideTimer)
       if (this.state.playing) {

@@ -1,6 +1,10 @@
 // Place all the styles related to the movies controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+$breakpoint-tablet: 980px;
+$breakpoint-mobile: 640px;
+
 .movie-container {
   max-width: 1300px;
   margin: 0 auto;
