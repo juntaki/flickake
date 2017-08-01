@@ -2,6 +2,8 @@
 
 Self-hosted movie library like Netflix, can be used with simple configuraion and little setting.
 
+![Demo](demo.gif)
+
 ## How to use
 
 ### Deploy with Docker
