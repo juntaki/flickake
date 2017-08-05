@@ -44,12 +44,12 @@ $breakpoint-phone: 640px;
 .back {
   @extend %ctlHeight;
   @extend %ctlWidth;
+  cursor: pointer;
   color: #ccc;
   position: absolute;
-  border: 5px solid #ccc;
-  border-radius: 2em;
+  border: 3px solid #ccc;
+  border-radius: 50%;
   background: #222;
-
   top: 5vh;
   left: 5vw;
 }
@@ -195,6 +195,7 @@ body {
       <source v-for="source in sources" :src="source.src">
       </source>
     </video>
+
     <div class="back" v-show="state.show" v-on:click="back" v-on:mouseover="enterControl" v-on:mouseleave="exitControl">
       <icon class="icon" name="arrow-left"></icon>
     </div>
@@ -386,6 +387,7 @@ export default {
     },
     showVolume() {
       this.state.volumeShow = true
+      clearTimeout(this.tmp.contrlVolHideTimer)
     },
     clearVolume() {
       clearTimeout(this.tmp.contrlVolHideTimer)
