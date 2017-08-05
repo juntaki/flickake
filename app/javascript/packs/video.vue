@@ -147,16 +147,16 @@ body {
       <source v-for="source in sources" :src="source.src">
       </source>
     </video>
-    <div class="back" v-show="state.show" v-on:click="back">
+    <div class="back" v-show="state.show" v-on:click="back" v-on:mouseover="enterControl" v-on:mouseleave="exitControl">
       <icon class="icon" name="arrow-left"></icon>
     </div>
     <div class="control" v-show="state.show">
-      <div class="progress-bar" v-on:mousedown="updatebar">
+      <div class="progress-bar" v-on:mousedown="updatebar" v-on:mouseover="enterControl" v-on:mouseleave="exitControl">
         <div class="progress" ref="progress">
           <span class="timeBar" v-bind:style="state.timeBar"></span>
         </div>
       </div>
-      <div>
+      <div v-on:mouseover="enterControl" v-on:mouseleave="exitControl">
         <div class="btnLeftR" v-on:click="skip(-10)">
           <icon class="icon" name="step-backward"></icon>
         </div>
@@ -219,7 +219,8 @@ export default {
         },
         fullscreen: false,
         show: true,
-        playing: false
+        playing: false,
+        controlling: false
       },
       tmp: {
         contrlHideTimer: null,
@@ -268,7 +269,7 @@ export default {
     showController() {
       this.state.show = true
       clearTimeout(this.tmp.contrlHideTimer)
-      if (this.state.playing) {
+      if (this.state.playing && !this.state.controlling) {
         this.tmp.contrlHideTimer = setTimeout(() => {
           this.state.show = false
         }, 2000)
@@ -278,6 +279,14 @@ export default {
       const percentage = this.$video.currentTime / this.$video.duration
       const position = 90 * percentage
       this.state.timeBar.width = position + "vw"
+    },
+    enterControl() {
+      this.state.controlling = true
+      clearTimeout(this.tmp.contrlHideTimer)
+    },
+    exitControl() {
+      this.state.controlling = false
+      clearTimeout(this.tmp.contrlHideTimer)
     },
     fullscreen() {
       if (this.state.fullscreen) {
