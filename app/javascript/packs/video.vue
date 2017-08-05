@@ -1,8 +1,8 @@
 <style lang="scss">
-$ctlHeight:5em;
-$ctlHeightTablet:3.5em;
-$ctlHeightPhone:2em;
-$barHeight:1.3em;
+$ctlHeight: 70px;
+$ctlHeightTablet: 50px;
+$ctlHeightPhone: 30px;
+$barHeight: 15px;
 
 $breakpoint-tablet: 980px;
 $breakpoint-phone: 640px;
@@ -60,6 +60,8 @@ $breakpoint-phone: 640px;
   margin: 25%;
 }
 
+$controlBorder: 1px;
+
 .control {
   color: #ccc;
   position: absolute;
@@ -71,11 +73,12 @@ $breakpoint-phone: 640px;
   %barcommon {
     @extend %ctlHeight;
     background: #222;
-    border: 1px solid #000;
+    border: $controlBorder solid #000;
   }
   %btn {
     @extend %ctlWidth;
     cursor: pointer;
+    position: relative;
   }
   .btnLeft {
     @extend %btn;
@@ -112,24 +115,69 @@ $breakpoint-phone: 640px;
     left: 1em;
     margin: auto;
   }
+  .volume {
+    @extend %ctlWidth;
+    position: absolute;
+    height: 2*$ctlHeight;
+    top: -2*($ctlHeight + $controlBorder);
+    @include max-screen($breakpoint-tablet) {
+      top: -2*($ctlHeightTablet + $controlBorder);
+      height: 2*$ctlHeightTablet;
+    }
+    right: -$controlBorder;
+    border-radius: 6px;
+    cursor: default;
+  }
+  .volumeBar {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+    width: 5px;
+    cursor: pointer;
+    background: #fff;
+    height: 1.5*$ctlHeight;
+    @include max-screen($breakpoint-tablet) {
+      height: 1.5*$ctlHeightTablet;
+    }
+  }
+  .volumeFill {
+    position: absolute;
+    background: royalblue;
+    bottom: 0px;
+    width: 5px;
+    height: 100%;
+  }
+  .volumeTab {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    left: -7.5px;
+    margin: auto;
+    position: absolute;
+    z-index: 10;
+    background: royalblue;
+    top: 0px;
+  }
   .progress {
     height: $barHeight;
     margin-bottom: $barHeight;
     cursor: pointer;
     background: #222;
     border-radius: $barHeight;
-
-    span {
-      height: $barHeight;
-      display: block;
-      border-radius: $barHeight;
-    }
+    overflow: hidden;
   }
   .timeBar {
+    height: $barHeight;
+    display: block;
+    border-radius: $barHeight;
     z-index: 10;
     width: 0;
-    background: -webkit-linear-gradient(top, rgba(107, 204, 226, 1) 0%, rgba(29, 163, 208, 1) 100%);
-    box-shadow: 0 0 7px rgba(107, 204, 226, .5);
+    background: royalblue;
   }
 }
 
@@ -171,8 +219,15 @@ body {
           <icon class="icon" name="compress" v-if="state.fullscreen"></icon>
           <icon class="icon" name="arrows-alt" v-else></icon>
         </div>
-        <div class="btnRight">
+        <div class="btnRight" @mouseover="showVolume" @mouseleave="clearVolume">
           <icon class="icon" name="volume-up"></icon>
+          <div class="volume" @mousedown="startDragVolume" @touchstart="startDragVolume" @mousemove="onDragVolume" @touchmove="onDragVolume"
+            @mouseup="stopDragVolume" @touchend="stopDragVolume" @mouseleave="stopDragVolume" v-show="state.volumeShow" @click.stop="clickVolume">
+            <div class="volumeBar" ref="volume">
+              <div class="volumeFill" v-bind:style="state.volumeFill"></div>
+              <span class="volumeTab" v-bind:style="state.volumeBar"></span>
+            </div>
+          </div>
         </div>
         <div class="barInfo">
           <div class="title">{{options.title}}</div>
@@ -213,17 +268,27 @@ export default {
     return {
       $video: null,
       seekbar: null,
+      volumebar: null,
       state: {
         timeBar: {
           width: "0vw"
         },
+        volumeBar: {
+          top: "0px"
+        },
+        volumeFill: {
+          height: "100%"
+        },
         fullscreen: false,
         show: true,
+        volumeShow: false,
         playing: false,
         controlling: false
       },
       tmp: {
+        contrlDragVolume: false,
         contrlHideTimer: null,
+        contrlVolHideTimer: null,
         clientX: 0,
         clientY: 0
       }
@@ -239,6 +304,7 @@ export default {
     this.$video.addEventListener('timeupdate', (e) => {
       this.changewidth()
     })
+    this.volumebar = this.$refs.volume
     if (this.options.autoplay) {
       this.play()
       this.state.show = false
@@ -274,11 +340,6 @@ export default {
           this.state.show = false
         }, 2000)
       }
-    },
-    changewidth() {
-      const percentage = this.$video.currentTime / this.$video.duration
-      const position = 90 * percentage
-      this.state.timeBar.width = position + "vw"
     },
     enterControl() {
       this.state.controlling = true
@@ -323,9 +384,47 @@ export default {
       }
       this.seek(maxduration * percentage / 100);
     },
+    showVolume() {
+      this.state.volumeShow = true
+    },
+    clearVolume() {
+      clearTimeout(this.tmp.contrlVolHideTimer)
+      this.tmp.contrlVolHideTimer = setTimeout(() => {
+        this.state.volumeShow = false
+      }, 2000)
+    },
+    startDragVolume() {
+      this.tmp.contrlDragVolume = true
+    },
+    stopDragVolume() {
+      this.tmp.contrlDragVolume = false
+    },
+    onDragVolume(e) {
+      if (this.tmp.contrlDragVolume == false) {
+        return
+      }
+      this.clickVolume(e)
+    },
+    clickVolume(e) {
+      var position = e.clientY - this.volumebar.getBoundingClientRect().top
+      var percentage = 100 * position / this.volumebar.offsetHeight
+      if (percentage > 100) {
+        percentage = 100;
+      }
+      if (percentage < 0) {
+        percentage = 0;
+      }
+      this.state.volumeBar.top = (this.volumebar.offsetHeight * percentage / 100 - 10) + "px"
+      this.state.volumeFill.height = (this.volumebar.offsetHeight * (1 - percentage / 100)) + "px"
+    },
     seek(value) {
       this.$video.currentTime = value;
       this.changewidth()
+    },
+    changewidth() {
+      const percentage = this.$video.currentTime / this.$video.duration
+      const position = 90 * percentage
+      this.state.timeBar.width = position + "vw"
     },
     skip(value) {
       this.seek(this.$video.currentTime + value)
