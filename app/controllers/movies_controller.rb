@@ -5,7 +5,7 @@ class MoviesController < ApplicationController
     # TODO: should be served from web server
     file_name = movie.title
     file_path = Rails.root.join("files", file_name)
-    if(request.headers["range"])
+    if(request.headers["range"] && !request.user_agent.include?('Firefox'))
       file_size = File.size(file_path)
 
       offset = 0
