@@ -374,9 +374,9 @@ export default {
       }
     },
     updatebar(e) {
-      var maxduration = this.$video.duration;
-      var position = e.clientX - this.seekbar.getBoundingClientRect().left
-      var percentage = 100 * position / this.seekbar.offsetWidth
+      const maxduration = this.$video.duration;
+      const position = e.clientX - this.seekbar.getBoundingClientRect().left
+      const percentage = 100 * position / this.seekbar.offsetWidth
       if (percentage > 100) {
         percentage = 100;
       }
@@ -408,8 +408,8 @@ export default {
       this.clickVolume(e)
     },
     clickVolume(e) {
-      var position = e.clientY - this.volumebar.getBoundingClientRect().top
-      var percentage = 100 * position / this.volumebar.offsetHeight
+      const position = e.clientY - this.volumebar.getBoundingClientRect().top
+      const percentage = 100 * position / this.volumebar.offsetHeight
       if (percentage > 100) {
         percentage = 100;
       }
