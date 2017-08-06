@@ -195,7 +195,6 @@ body {
       <source v-for="source in sources" :src="source.src">
       </source>
     </video>
-
     <div class="back" v-show="state.show" v-on:click="back" v-on:mouseover="enterControl" v-on:mouseleave="exitControl">
       <icon class="icon" name="arrow-left"></icon>
     </div>
@@ -334,6 +333,7 @@ export default {
       this.showController()
     },
     showController() {
+      this.state.fullscreen = this.fullscreenStatus()
       this.state.show = true
       clearTimeout(this.tmp.contrlHideTimer)
       if (this.state.playing && !this.state.controlling) {
@@ -341,6 +341,9 @@ export default {
           this.state.show = false
         }, 2000)
       }
+    },
+    fullscreenStatus() {
+      return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
     },
     enterControl() {
       this.state.controlling = true
@@ -418,6 +421,7 @@ export default {
       }
       this.state.volumeBar.top = (this.volumebar.offsetHeight * percentage / 100 - 10) + "px"
       this.state.volumeFill.height = (this.volumebar.offsetHeight * (1 - percentage / 100)) + "px"
+      this.$video.volume = (1 - percentage / 100)
     },
     seek(value) {
       this.$video.currentTime = value;
