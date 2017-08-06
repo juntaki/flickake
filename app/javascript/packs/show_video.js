@@ -29,11 +29,22 @@
 // </div>
 
 import Vue from 'vue/dist/vue.esm'
-import myVideo from './video.vue'
+import Flick from './video.vue'
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
-    el: '#hello',
-    components: { myVideo }
+    el: '#video',
+    components: {
+      Flick
+    },
+    mounted: function() {
+      const vm = this;
+      window.addEventListener('keyup', function(event) {
+        console.log("space");
+        if(event.keyCode == 32) { // space
+          vm.$children[0].play()
+        }
+      });
+    }
   })
 })

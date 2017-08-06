@@ -376,7 +376,7 @@ export default {
     updatebar(e) {
       const maxduration = this.$video.duration;
       const position = e.clientX - this.seekbar.getBoundingClientRect().left
-      const percentage = 100 * position / this.seekbar.offsetWidth
+      let percentage = 100 * position / this.seekbar.offsetWidth
       if (percentage > 100) {
         percentage = 100;
       }
@@ -409,7 +409,7 @@ export default {
     },
     clickVolume(e) {
       const position = e.clientY - this.volumebar.getBoundingClientRect().top
-      const percentage = 100 * position / this.volumebar.offsetHeight
+      let percentage = 100 * position / this.volumebar.offsetHeight
       if (percentage > 100) {
         percentage = 100;
       }
