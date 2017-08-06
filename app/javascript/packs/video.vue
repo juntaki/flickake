@@ -219,8 +219,9 @@ body {
           <icon class="icon" name="compress" v-if="state.fullscreen"></icon>
           <icon class="icon" name="arrows-alt" v-else></icon>
         </div>
-        <div class="btnRight" @mouseover="showVolume" @mouseleave="clearVolume">
-          <icon class="icon" name="volume-up"></icon>
+        <div class="btnRight" @mouseover="showVolume" @mouseleave="clearVolume" @click="volumeMute">
+          <icon class="icon" name="volume-off" v-if="state.muted"></icon>
+          <icon class="icon" name="volume-up" v-else></icon>
           <div class="volume" @mousedown="startDragVolume" @touchstart="startDragVolume" @mousemove="onDragVolume" @touchmove="onDragVolume"
             @mouseup="stopDragVolume" @touchend="stopDragVolume" @mouseleave="stopDragVolume" v-show="state.volumeShow" @click.stop="clickVolume">
             <div class="volumeBar" ref="volume">
@@ -260,6 +261,7 @@ export default {
         return {
           title: "Title",
           autoplay: false,
+          volume: 1.0,
         }
       }
     }
@@ -282,6 +284,8 @@ export default {
         fullscreen: false,
         show: true,
         volumeShow: false,
+        volume: 1.0,
+        muted: false,
         playing: false,
         controlling: false
       },
@@ -305,6 +309,9 @@ export default {
       this.changewidth()
     })
     this.volumebar = this.$refs.volume
+    if (this.options.volume) {
+      this.volumeChange(this.options.volume)
+    }
     if (this.options.autoplay) {
       this.play()
       this.state.show = false
@@ -412,16 +419,34 @@ export default {
     },
     clickVolume(e) {
       const position = e.clientY - this.volumebar.getBoundingClientRect().top
-      let percentage = 100 * position / this.volumebar.offsetHeight
-      if (percentage > 100) {
-        percentage = 100;
+      let percentage = 1 - position / this.volumebar.offsetHeight
+      if (percentage > 1) {
+        percentage = 1;
       }
       if (percentage < 0) {
         percentage = 0;
       }
-      this.state.volumeBar.top = (this.volumebar.offsetHeight * percentage / 100 - 10) + "px"
-      this.state.volumeFill.height = (this.volumebar.offsetHeight * (1 - percentage / 100)) + "px"
-      this.$video.volume = (1 - percentage / 100)
+      this.volumeChange(percentage)
+    },
+    volumeBarChange(percentage) {
+      this.state.volumeBar.top = (this.volumebar.offsetHeight * (1 - percentage) - 10) + "px"
+      this.state.volumeFill.height = (this.volumebar.offsetHeight * percentage) + "px"
+    },
+    volumeMute() {
+      if (this.state.muted == true) {
+        this.$video.volume = this.state.volume
+        this.volumeBarChange(this.state.volume)
+        this.state.muted = false
+      } else {
+        this.$video.volume = 0.0
+        this.volumeBarChange(0)
+        this.state.muted = true
+      }
+    },
+    volumeChange(vol) {
+      this.state.volume = vol
+      this.$video.volume = vol
+      this.volumeBarChange(vol)
     },
     seek(value) {
       this.$video.currentTime = value;
