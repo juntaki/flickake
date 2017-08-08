@@ -1,11 +1,11 @@
 class MoviesController < ApplicationController
-  RANGE_LIMIT = 1024 * 1024
+  RANGE_LIMIT = 1024 * 1024 * 256
   def static
     movie = Movie.find(params[:id])
     # TODO: should be served from web server
     file_name = movie.title
     file_path = Rails.root.join("files", file_name)
-    if(request.headers["range"] && !request.user_agent.include?('Firefox'))
+    if(request.headers["range"])
       file_size = File.size(file_path)
 
       offset = 0
