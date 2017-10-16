@@ -1,5 +1,5 @@
 class MoviesController < ApplicationController
-  RANGE_LIMIT = 1024 * 1024 * 256
+  RANGE_LIMIT = 1024 * 1024
   def static
     movie = Movie.find(params[:id])
     # TODO: should be served from web server
