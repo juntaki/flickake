@@ -2,7 +2,7 @@
 
 Self-hosted movie library like Netflix, can be used with simple configuraion and little setting.
 
-![Demo](demo.gif)
+![Demo](https://res.cloudinary.com/juntaki/image/upload/v1510982247/flickake_demo.webp)
 
 ## How to use
 
